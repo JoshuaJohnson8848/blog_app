@@ -1,3 +1,4 @@
+import { User } from '@/lib/types/user';
 import { useEffect, useState } from 'react';
 
 declare global {
@@ -23,13 +24,13 @@ function getStoredUser(): any | null {
       role: role || 'user',
     };
   } catch (e) {
-    console.error('Failed to decode token');
+    console.error('Failed to decode token', e);
     return null;
   }
 }
 
 export function useAuth() {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,7 +42,7 @@ export function useAuth() {
     setLoading(false);
   }, []);
 
-  const login = (token: string, userData: any) => {
+  const login = (token: string, userData: User) => {
     localStorage.setItem('token', token);
     setUser(userData);
   };

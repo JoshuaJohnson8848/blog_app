@@ -28,6 +28,7 @@ export default function Navbar() {
       try {
         setUser({ name: userName || 'User', role: userRole });
       } catch (error) {
+        console.log(error);
         localStorage.removeItem('token');
       }
     }

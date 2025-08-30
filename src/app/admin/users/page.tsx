@@ -2,10 +2,11 @@
 
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiClient } from '@/lib/apiClient';
+import { User } from '@/lib/types/user';
 import { useEffect, useState } from 'react';
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,6 +16,8 @@ export default function AdminUsersPage() {
         setUsers(Array.isArray(data?.data) ? data?.data : []);
       } catch (error) {
         alert('Failed to load users');
+        console.log(error);
+        
       } finally {
         setLoading(false);
       }
@@ -28,6 +31,7 @@ export default function AdminUsersPage() {
       await apiClient(`/api/users/${id}`, { method: 'DELETE', auth: true });
       setUsers(users.filter((u) => u._id !== id));
     } catch (error) {
+      console.log(error);
       alert('Failed to delete user');
     }
   };

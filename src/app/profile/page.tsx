@@ -3,15 +3,17 @@
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/hooks/useAuth';
 import { apiClient } from '@/lib/apiClient';
+import { User } from '@/lib/types/user';
 import { useState, useEffect } from 'react';
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<{
-    _id: string;
-    fullName: string;
-    email: string;
-    phone?: string;
-  } | null>(null);
+  // const [user, setUser] = useState<{
+  //   _id: string;
+  //   fullName: string;
+  //   email: string;
+  //   phone?: string;
+  // } | null>(null);
+    const [user, setUser] = useState<User | null>(null);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -29,6 +31,8 @@ export default function ProfilePage() {
       setEmail(data?.data.email || '');
       setPhone(data?.data.phone || '');
     } catch (error) {
+      console.log(error);
+      
       setMessage('Failed to load profile');
     }
   };
@@ -57,8 +61,12 @@ export default function ProfilePage() {
       await fetchProfile();
 
       setMessage('Profile updated successfully!');
-    } catch (err: any) {
-      setMessage(err.message || 'Update failed. Please try again.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMessage(err.message || 'Update failed. Please try again.');
+      } else {
+        console.log('An unknown error occurred');
+      }
     }
   };
 

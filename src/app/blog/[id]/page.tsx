@@ -4,10 +4,11 @@ import { use, useEffect, useState } from 'react';
 import { apiClient } from '@/lib/apiClient';
 import { notFound } from 'next/navigation';
 import CommentSection from '@/components/CommentSection';
+import { Post } from '@/lib/types/post';
 
 export default function BlogDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id }: any = use(params);
-  const [post, setPost] = useState<any | null>(null);
+  const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchOnePost = async () => {

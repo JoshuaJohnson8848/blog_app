@@ -3,15 +3,16 @@
 import PostCard from '@/components/PostCard';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiClient } from '@/lib/apiClient';
+import { Post } from '@/lib/types/post';
 import { useEffect, useState } from 'react';
 
 export default function PostListPage() {
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchPosts = async () => {
     try {
-      let response = await apiClient('/blog/my', { auth: true });
+      const response = await apiClient('/blog/my', { auth: true });
       setPosts(response.data || []);
     } catch (error) {
       console.error('Failed to fetch posts:', error);
@@ -21,9 +22,9 @@ export default function PostListPage() {
     }
   };
 
-  const deletePost = async (id: any) => {
+  const deletePost = async (id: string) => {
     try {
-      let response = await apiClient(`/blog/${id}`, { method: 'DELETE', auth: true });
+      const response = await apiClient(`/blog/${id}`, { method: 'DELETE', auth: true });
 
       if (!response) throw new Error('Failed to delete post');
       location.reload();
@@ -56,7 +57,7 @@ export default function PostListPage() {
           + Create New Post
         </a>
         {posts.length === 0 ? (
-          <p className="text-gray-600">You haven't created any posts yet.</p>
+          <p className="text-gray-600">{`You haven't created any posts yet.`}</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post) => (

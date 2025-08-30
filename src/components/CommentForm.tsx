@@ -8,7 +8,7 @@ export default function CommentForm({
   onCommentAdded,
 }: {
   postId: string;
-  onCommentAdded: (comment: any) => void;
+  onCommentAdded: (comment: string) => void;
 }) {
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -27,6 +27,7 @@ export default function CommentForm({
       onCommentAdded(newComment);
       setContent('');
     } catch (error) {
+      console.log(error);
       alert('Failed to add comment. Are you logged in?');
     } finally {
       setSubmitting(false);

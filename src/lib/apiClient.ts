@@ -37,6 +37,7 @@ export async function apiClient(
       const errorData = await res.json();
       errorMessage = errorData.message || errorMessage;
     } catch (e) {
+      console.log(e);
       errorMessage = await res.text();
     }
     throw new Error(errorMessage);

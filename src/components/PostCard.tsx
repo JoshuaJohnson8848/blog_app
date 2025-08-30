@@ -1,6 +1,7 @@
+import { Post } from '@/lib/types/post';
 import Link from 'next/link';
 
-export default function PostCard({ post }: { post: any }) {
+export default function PostCard({ post }: { post: Post }) {
     return (
         <div className="border rounded-lg p-5 shadow-sm bg-white hover:shadow transition-shadow">
             <h2 className="text-xl font-semibold text-gray-800 line-clamp-2">{post.title}</h2>

@@ -1,11 +1,12 @@
 import PostCard from '@/components/PostCard';
 import { apiClient } from '@/lib/apiClient';
+import { Post } from '@/lib/types/post';
 
 export default async function HomePage() {
-  let posts: any[] = [];
+  let posts: Post[] = [];
 
   try {
-    let response = await apiClient('/blog/');
+    const response = await apiClient('/blog/');
     posts = response.data || [];
   } catch (error) {
     console.error('Failed to fetch posts:', error);
@@ -18,7 +19,7 @@ export default async function HomePage() {
         <p className="text-gray-600">No posts available.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts?.map((post: any) => (
+          {posts?.map((post: Post) => (
             <PostCard key={post._id} post={post} />
           ))}
         </div>

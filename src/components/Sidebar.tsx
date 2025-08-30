@@ -1,7 +1,6 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 
 export default function Sidebar() {
@@ -27,6 +26,7 @@ export default function Sidebar() {
             try {
                 setUser({ name: userName || 'User', role: userRole });
             } catch (error) {
+                console.log(error);
                 localStorage.removeItem('token');
             }
         }

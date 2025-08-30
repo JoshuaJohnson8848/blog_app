@@ -28,11 +28,10 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             try {
                 const response = await apiClient(`/blog/${id}`, { auth: true });
                 if (!response) return notFound();
-                console.log('RESPONSE', response);
-
                 const data = await response.data;
                 setPost(data);
             } catch (err) {
+                console.log(err);
                 setError('Failed to load post');
             } finally {
                 setLoading(false);
@@ -57,8 +56,12 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
             router.push('/posts/list');
             router.refresh();
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unknown error occurred');
+            }
         }
     };
 

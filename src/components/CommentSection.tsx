@@ -1,9 +1,9 @@
 'use client';
 
+import { Comment } from '@/lib/types/comment';
 import CommentForm from './CommentForm';
 
-export default function CommentSection({ comments, postId, refetchPost }: { comments: any, postId: any, refetchPost: any }) {
-  console.log('comments', comments);
+export default function CommentSection({ comments, postId, refetchPost }: { comments: [], postId: string, refetchPost: () => void }) {
 
   const handleNewComment = () => {
     refetchPost()
@@ -18,7 +18,7 @@ export default function CommentSection({ comments, postId, refetchPost }: { comm
         {comments.length === 0 ? (
           <p className="text-gray-500">No comments yet.</p>
         ) : (
-          comments.map((comment: any) => (
+          comments.map((comment: Comment) => (
             <div key={comment._id} className="border-l-4 border-blue-200 pl-4 py-2 bg-white shadow-sm rounded">
               <p className="text-gray-800">{comment.comment}</p>
               <p className="text-sm text-gray-500 mt-1">

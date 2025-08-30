@@ -8,7 +8,7 @@ export default function ProtectedRoute({
   requiredRole,
 }: {
   children: React.ReactNode;
-  requiredRole?: any;
+  requiredRole?: string;
 }) {
   const { user, loading } = useAuth();
   const router = useRouter();
