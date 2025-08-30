@@ -1,6 +1,7 @@
 'use client';
 
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { apiClient } from '@/lib/apiClient';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -17,17 +18,18 @@ export default function CreatePostPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/blog', {
+      const response = await apiClient('/blog', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content }),
+        body: { title, content },
+        auth: true
       });
 
-      const data = await res.json();
+      const data = await response;
 
-      if (!res.ok) throw new Error(data.message || 'Failed to create post');
+      if (!response) throw new Error(data.message || 'Failed to create post');
 
-      router.push('/dashboard');
+      router.push('/posts/list');
       router.refresh();
     } catch (err: any) {
       setError(err.message);
@@ -37,7 +39,7 @@ export default function CreatePostPage() {
   };
 
   return (
-    // <ProtectedRoute>
+    <ProtectedRoute>
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Write a New Post</h1>
         {error && <p className="text-red-500 mb-4">{error}</p>}
@@ -82,6 +84,6 @@ export default function CreatePostPage() {
           </div>
         </form>
       </div>
-    // </ProtectedRoute>
+    </ProtectedRoute>
   );
 }

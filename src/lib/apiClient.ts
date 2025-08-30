@@ -4,27 +4,42 @@ interface FetchOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: any;
   headers?: Record<string, string>;
+  auth?: boolean;
 }
 
 export async function apiClient(
   endpoint: string,
   options: FetchOptions = {}
 ): Promise<any> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+  let token;
+  if (typeof window !== "undefined") {
+    token = localStorage.getItem("token");
+  }
+
+  if (options.auth && !token) {
+    throw new Error('Authentication required but no token found.');
+  }
 
   const res = await fetch(`${API_URL}${endpoint}`, {
     method: options.method || 'GET',
     headers: {
       'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
+      ...(token && options.auth !== false && { 'Authorization': `Bearer ${token}` }),
       ...options.headers,
     },
     body: options.body ? JSON.stringify(options.body) : undefined,
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw new Error(error.message || 'Something went wrong');
+    let errorMessage = 'Something went wrong';
+    try {
+      const errorData = await res.json();
+      errorMessage = errorData.message || errorMessage;
+    } catch (e) {
+      errorMessage = await res.text();
+    }
+    throw new Error(errorMessage);
   }
 
   return res.json();

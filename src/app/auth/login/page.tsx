@@ -28,18 +28,21 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const res = await apiClient('/auth/login', {
+            const response = await apiClient('/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: { email, password },
             });
 
-            const data = await res.user.json();
+            const data = await response;
 
-            if (!res.ok) throw new Error(data.message || 'Login failed');
+            if (!response.status) throw new Error(data.message || 'Login failed');
 
             localStorage.setItem('token', data.token);
-            router.push('/dashboard');
+            localStorage.setItem('user_name', data.user?.name);
+            localStorage.setItem('role', data.user?.role);
+            localStorage.setItem('id', data.user?.id);
+            router.push('/');
             router.refresh();
         } catch (err: any) {
             setError(err.message);

@@ -1,16 +1,32 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Menu,
+  MenuItem,
+  IconButton,
+  Container,
+  Box,
+  Link,
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
 export default function Navbar() {
   const [user, setUser] = useState<{ name: string; role: string } | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
+    const userRole = localStorage.getItem('role');
+    const userName = localStorage.getItem('user_name');
+    if (userRole && userName) {
       try {
-        const decoded = JSON.parse(atob(token.split('.')[1]));
-        setUser({ name: decoded.name || 'User', role: decoded.role });
+        setUser({ name: userName || 'User', role: userRole });
       } catch (error) {
         localStorage.removeItem('token');
       }
@@ -19,36 +35,124 @@ export default function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user_name');
+    localStorage.removeItem('role');
+    localStorage.removeItem('id');
     setUser(null);
-    window.location.href = '/';
+    setAnchorEl(null);
+    router.push('/');
+    router.refresh();
+  };
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   return (
-    <nav className="bg-white shadow-sm mb-8">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-blue-600">
-          <a href="/">BlogApp</a>
-        </h1>
-        <div className="flex items-center gap-4">
-          <a href="/" className="hover:underline">Home</a>
-          {user ? (
-            <>
-              <a href="/dashboard" className="hover:underline">Dashboard</a>
-              {user.role === 'admin' && (
-                <a href="/admin/users" className="hover:underline text-red-600">Admin</a>
-              )}
-              <button onClick={handleLogout} className="text-red-600 hover:underline">
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <a href="/auth/login" className="hover:underline">Login</a>
-              <a href="/auth/register" className="hover:underline">Register</a>
-            </>
-          )}
-        </div>
-      </div>
-    </nav>
+    <AppBar position="static" color="default" elevation={1} sx={{ mb: 4, backgroundColor: '#fff' }}>
+      <Container maxWidth="xl">
+        <Toolbar className="ml-[130px]" disableGutters>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, ml: 4 }}>
+            <Link href="/" color="inherit" underline="hover" sx={{ mx: 1.5 }}>
+              Home
+            </Link>
+            {user && <Link href="/profile" color="inherit" underline="hover" sx={{ mx: 1.5 }}>
+              Profile
+            </Link>}
+            {user?.role === 'admin' && (
+              <Link href="/admin/users" color="error" underline="hover" sx={{ mx: 1.5 }}>
+                Admin
+              </Link>
+            )}
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {user ? (
+              <>
+                <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
+                  Hi, {user.name}
+                </Typography>
+                <Button color="error" onClick={handleLogout} size="small">
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button color="inherit" href="/auth/login" size="small">
+                  Login
+                </Button>
+                <Button variant="contained" href="/auth/signup" size="small">
+                  Register
+                </Button>
+              </>
+            )}
+          </Box>
+
+          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+            <IconButton size="large" edge="start" color="inherit" aria-label="menu" onClick={handleMenuOpen}>
+              <MenuIcon />
+            </IconButton>
+          </Box>
+        </Toolbar>
+      </Container>
+
+      <Menu
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleMenuClose}>
+          <Link href="/" color="inherit" underline="none">
+            Home
+          </Link>
+        </MenuItem>
+
+        {user && (
+          <MenuItem onClick={handleMenuClose}>
+            <Link href="/profile" color="inherit" underline="none">
+              Profile
+            </Link>
+          </MenuItem>
+        )}
+
+        {user?.role === 'admin' && (
+          <MenuItem onClick={handleMenuClose}>
+            <Link href="/admin/users" color="error" underline="none">
+              Admin
+            </Link>
+          </MenuItem>
+        )}
+
+        {user ? (
+          <MenuItem onClick={handleLogout}>
+            <Typography color="error">Logout</Typography>
+          </MenuItem>
+        ) : [
+          <MenuItem key="login">
+            <Link href="/auth/login" color="inherit" underline="none">
+              Login
+            </Link>
+          </MenuItem>,
+          <MenuItem key="register">
+            <Link href="/auth/register" color="primary" underline="none">
+              Register
+            </Link>
+          </MenuItem>
+        ]}
+      </Menu>
+    </AppBar>
   );
 }

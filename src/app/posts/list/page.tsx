@@ -1,20 +1,52 @@
-// 'use client'
+'use client';
+
 import PostCard from '@/components/PostCard';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiClient } from '@/lib/apiClient';
+import { useEffect, useState } from 'react';
 
-export default async function PostListPage() {
-  let posts: any[] = [];
+export default function PostListPage() {
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  try {
-    let response = await apiClient('/blog/');
-    posts = response.data || [];
-  } catch (error) {
-    console.error('Failed to fetch posts:', error);
+  const fetchPosts = async () => {
+    try {
+      let response = await apiClient('/blog/my', { auth: true });
+      setPosts(response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch posts:', error);
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deletePost = async (id: any) => {
+    try {
+      let response = await apiClient(`/blog/${id}`, { method: 'DELETE', auth: true });
+
+      if (!response) throw new Error('Failed to delete post');
+      location.reload();
+
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+    } finally {
+      setLoading(false);
+      fetchPosts();
+    }
+  }
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  if (loading) {
+    return <p className="text-gray-600">Loading posts...</p>;
   }
 
   return (
-    // <ProtectedRoute>
+    <ProtectedRoute>
+
       <div>
         <h1 className="text-3xl font-bold mb-6">My Posts</h1>
         <a
@@ -38,12 +70,11 @@ export default async function PostListPage() {
                     Edit
                   </a>
                   <button
-                    // onClick={async () => {
-                    //   if (confirm('Delete this post?')) {
-                    //     await apiClient(`/blog/${post._id}`, { method: 'DELETE' });
-                    //     location.reload();
-                    //   }
-                    // }}
+                    onClick={async () => {
+                      if (confirm('Delete this post?')) {
+                        deletePost(post._id)
+                      }
+                    }}
                     className="text-sm text-red-600 hover:underline"
                   >
                     Delete
@@ -54,6 +85,6 @@ export default async function PostListPage() {
           </div>
         )}
       </div>
-    // </ProtectedRoute>
+    </ProtectedRoute>
   );
 }

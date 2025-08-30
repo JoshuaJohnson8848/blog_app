@@ -9,15 +9,18 @@ declare global {
 function getStoredUser(): any | null {
   if (typeof window === 'undefined') return null;
   const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('id');
+  const user_name = localStorage.getItem('user_name');
+  const role = localStorage.getItem('role');
+
   if (!token) return null;
 
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
     return {
-      _id: payload.id,
-      name: payload.name || 'User',
-      email: payload.email || '',
-      role: payload.role || 'user',
+      id: userId,
+      name: user_name || 'User',
+      token: token || '',
+      role: role || 'user',
     };
   } catch (e) {
     console.error('Failed to decode token');
@@ -45,6 +48,9 @@ export function useAuth() {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user_name');
+    localStorage.removeItem('role');
+    localStorage.removeItem('id');
     setUser(null);
     window.location.href = '/';
   };

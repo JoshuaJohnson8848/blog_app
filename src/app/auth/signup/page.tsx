@@ -13,6 +13,7 @@ import {
     Link,
     Box,
 } from '@mui/material';
+
 import { apiClient } from '@/lib/apiClient';
 
 export default function RegisterPage() {
@@ -29,21 +30,17 @@ export default function RegisterPage() {
         setLoading(true);
 
         try {
-            const res = await apiClient('/auth/signup', {
+            const response = await apiClient('/auth/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullName: name, email, password }),
+                body: { fullName: name, email, password },
             });
 
-            const data = await res.json();
+            const data = await response;
 
-            if (!res.ok) throw new Error(data.message || 'Registration failed');
+            if (!response.status) throw new Error(data.message || 'Registration failed');
 
-            if (data.token) {
-                localStorage.setItem('token', data.token);
-            }
-
-            router.push('/dashboard');
+            router.push('/auth/login');
             router.refresh();
         } catch (err: any) {
             setError(err.message);

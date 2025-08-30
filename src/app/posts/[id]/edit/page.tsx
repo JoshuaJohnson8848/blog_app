@@ -26,11 +26,11 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     useEffect(() => {
         const fetchPost = async () => {
             try {
-                const res = await apiClient(`/blog/${id}`);
-                if (!res.ok) return notFound();
-                console.log('RESPONSE',res);
-                
-                const data = await res.data?.json();
+                const response = await apiClient(`/blog/${id}`, { auth: true });
+                if (!response) return notFound();
+                console.log('RESPONSE', response);
+
+                const data = await response.data;
                 setPost(data);
             } catch (err) {
                 setError('Failed to load post');
@@ -46,15 +46,16 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         if (!post) return;
 
         try {
-            const res = await apiClient(`/blog/${id}`, {
+            const response = await apiClient(`/blog/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title: post.title, content: post.content }),
+                body: { title: post.title, content: post.content },
+                auth: true
             });
 
-            if (!res.ok) throw new Error('Failed to update post');
+            if (!response) throw new Error('Failed to update post');
 
-            router.push('/dashboard');
+            router.push('/posts/list');
             router.refresh();
         } catch (err: any) {
             setError(err.message);
@@ -65,7 +66,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     if (!post) return notFound();
 
     return (
-        // <ProtectedRoute>
+        <ProtectedRoute>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
             <Typography variant="h4" component="h1" gutterBottom>
                 Edit Post
@@ -122,13 +123,13 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                     <Button
                         variant="outlined"
                         color="secondary"
-                        onClick={() => router.push('/dashboard')}
+                        onClick={() => router.push('/posts/list')}
                     >
                         Cancel
                     </Button>
                 </div>
             </form>
         </div>
-        // </ProtectedRoute>
+        </ProtectedRoute>
     );
 }

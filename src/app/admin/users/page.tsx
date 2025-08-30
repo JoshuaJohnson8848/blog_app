@@ -4,14 +4,14 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiClient } from '@/lib/apiClient';
 import { useEffect, useState } from 'react';
 
-export default async function AdminUsersPage() {
+export default function AdminUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const data = await apiClient('/user');
+        const data = await apiClient('/user?type=user', { auth: true });
         setUsers(Array.isArray(data?.data) ? data?.data : []);
       } catch (error) {
         alert('Failed to load users');
@@ -25,7 +25,7 @@ export default async function AdminUsersPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this user?')) return;
     try {
-      await fetch(`/api/users/${id}`, { method: 'DELETE' });
+      await apiClient(`/api/users/${id}`, { method: 'DELETE', auth: true });
       setUsers(users.filter((u) => u._id !== id));
     } catch (error) {
       alert('Failed to delete user');
@@ -44,16 +44,16 @@ export default async function AdminUsersPage() {
               <tr className="bg-gray-100">
                 <th className="py-2 px-4 border">Name</th>
                 <th className="py-2 px-4 border">Email</th>
-                <th className="py-2 px-4 border">Role</th>
+                <th className="py-2 px-4 border">Phone</th>
                 <th className="py-2 px-4 border">Actions</th>
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
                 <tr key={user._id}>
-                  <td className="py-2 px-4 border">{user.name}</td>
+                  <td className="py-2 px-4 border">{user.fullName}</td>
                   <td className="py-2 px-4 border">{user.email}</td>
-                  <td className="py-2 px-4 border capitalize">{user.role}</td>
+                  <td className="py-2 px-4 border capitalize">{user.phone}</td>
                   <td className="py-2 px-4 border">
                     <button
                       onClick={() => handleDelete(user._id)}
