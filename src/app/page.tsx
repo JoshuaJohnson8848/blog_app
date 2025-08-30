@@ -7,8 +7,6 @@ export default async function HomePage() {
   try {
     let response = await apiClient('/blog/');
     posts = response.data || [];
-    console.log('POSTS', posts);
-    
   } catch (error) {
     console.error('Failed to fetch posts:', error);
   }
