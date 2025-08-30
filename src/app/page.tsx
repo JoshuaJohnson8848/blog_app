@@ -1,16 +1,24 @@
+'use client'
+
 import PostCard from '@/components/PostCard';
 import { apiClient } from '@/lib/apiClient';
-import { Post } from '@/lib/types/post';
+import { useEffect, useState } from 'react';
 
-export default async function HomePage() {
-  let posts: Post[] = [];
+export default function HomePage() {
+  const [posts, setPosts] = useState<any[]>([]);
 
-  try {
-    const response = await apiClient('/blog/');
-    posts = response.data || [];
-  } catch (error) {
-    console.error('Failed to fetch posts:', error);
+  const fetchPosts = async () => {
+    try {
+      const response = await apiClient('/blog/');
+      setPosts(response?.data || []);
+    } catch (error) {
+      console.error('Failed to fetch posts:', error);
+    }
   }
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
 
   return (
     <div>
@@ -19,7 +27,7 @@ export default async function HomePage() {
         <p className="text-gray-600">No posts available.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts?.map((post: Post) => (
+          {posts?.map((post: any) => (
             <PostCard key={post._id} post={post} />
           ))}
         </div>
