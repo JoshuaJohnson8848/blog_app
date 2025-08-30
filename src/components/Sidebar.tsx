@@ -2,10 +2,11 @@
 
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { useEffect, useState } from 'react';
 
 export default function Sidebar() {
     const pathname = usePathname();
-    const { user } = useAuth();
+    const [user, setUser] = useState<{ name: string; role: string } | null>(null);
 
     const menuItems = [
         { label: 'Dashboard', href: '/' },
@@ -18,6 +19,18 @@ export default function Sidebar() {
             : []
         ),
     ];
+
+    useEffect(() => {
+        const userRole = localStorage.getItem('role');
+        const userName = localStorage.getItem('user_name');
+        if (userRole && userName) {
+            try {
+                setUser({ name: userName || 'User', role: userRole });
+            } catch (error) {
+                localStorage.removeItem('token');
+            }
+        }
+    }, []);
 
     const adminItems = [
         { label: 'Manage Users', href: '/admin/users' },
@@ -37,8 +50,8 @@ export default function Sidebar() {
                             <a
                                 href={item.href}
                                 className={`block p-2 rounded transition-colors ${pathname === item.href
-                                        ? 'bg-white text-blue-600 font-medium'
-                                        : 'text-white hover:bg-blue-500'
+                                    ? 'bg-white text-blue-600 font-medium'
+                                    : 'text-white hover:bg-blue-500'
                                     }`}
                             >
                                 {item.label}
@@ -56,8 +69,8 @@ export default function Sidebar() {
                                     <a
                                         href={item.href}
                                         className={`block p-2 rounded transition-colors ${pathname === item.href
-                                                ? 'bg-white text-blue-600 font-medium'
-                                                : 'text-white hover:bg-blue-500'
+                                            ? 'bg-white text-blue-600 font-medium'
+                                            : 'text-white hover:bg-blue-500'
                                             }`}
                                     >
                                         {item.label}

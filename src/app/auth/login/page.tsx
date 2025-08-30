@@ -43,11 +43,11 @@ export default function LoginPage() {
             localStorage.setItem('role', data.user?.role);
             localStorage.setItem('id', data.user?.id);
             router.push('/');
-            router.refresh();
         } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);
+            router.refresh();
         }
     };
 
