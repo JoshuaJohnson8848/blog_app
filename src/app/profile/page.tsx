@@ -4,23 +4,18 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/hooks/useAuth';
 import { apiClient } from '@/lib/apiClient';
 import { User } from '@/lib/types/user';
+import { confirm } from 'material-ui-confirm';
 import { useState, useEffect } from 'react';
+import { showToast } from 'react-next-toast';
 
 export default function ProfilePage() {
-  // const [user, setUser] = useState<{
-  //   _id: string;
-  //   fullName: string;
-  //   email: string;
-  //   phone?: string;
-  // } | null>(null);
-    const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const { user: loggedUser } = useAuth();
 
-  // Fetch user profile
   const fetchProfile = async () => {
     if (!loggedUser?.id) return;
 
@@ -32,7 +27,7 @@ export default function ProfilePage() {
       setPhone(data?.data.phone || '');
     } catch (error) {
       console.log(error);
-      
+
       setMessage('Failed to load profile');
     }
   };
@@ -52,18 +47,27 @@ export default function ProfilePage() {
     };
 
     try {
-      await apiClient(`/user/${user?._id}`, {
-        method: 'PUT',
-        body: updateData,
-        auth: true
+      const { confirmed } = await confirm({
+        title: "Confirm Action ?",
+        description: "This action cannot be undone.",
+        confirmationText: "Yes, Confirm",
+        cancellationText: "Cancel",
       });
 
-      await fetchProfile();
+      if (confirmed) {
+        await apiClient(`/user/${user?._id}`, {
+          method: 'PUT',
+          body: updateData,
+          auth: true
+        });
 
-      setMessage('Profile updated successfully!');
+        await fetchProfile();
+        showToast.success("Profile updated successfully!", 3000)
+      }
+
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setMessage(err.message || 'Update failed. Please try again.');
+        showToast.error("Update failed. Please try again", 3000)
       } else {
         console.log('An unknown error occurred');
       }
@@ -87,11 +91,10 @@ export default function ProfilePage() {
 
         {message && (
           <div
-            className={`p-3 mb-4 text-sm rounded ${
-              message.includes('successfully')
-                ? 'bg-green-100 text-green-700'
-                : 'bg-red-100 text-red-700'
-            }`}
+            className={`p-3 mb-4 text-sm rounded ${message.includes('successfully')
+              ? 'bg-green-100 text-green-700'
+              : 'bg-red-100 text-red-700'
+              }`}
           >
             {message}
           </div>
@@ -99,7 +102,6 @@ export default function ProfilePage() {
 
         <form onSubmit={handleUpdate}>
           <div className="space-y-4">
-            {/* Full Name */}
             <div>
               <label className="block text-sm font-medium mb-1">Full Name</label>
               <input
@@ -111,7 +113,6 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Email */}
             <div>
               <label className="block text-sm font-medium mb-1">Email</label>
               <input
@@ -123,7 +124,6 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Phone */}
             <div>
               <label className="block text-sm font-medium mb-1">Phone (Optional)</label>
               <input

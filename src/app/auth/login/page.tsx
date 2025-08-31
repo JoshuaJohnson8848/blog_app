@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import {
     Container,
     Paper,
@@ -14,13 +13,14 @@ import {
     Box,
 } from '@mui/material';
 import { apiClient } from '@/lib/apiClient';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const router = useRouter();
+    const { login } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -38,11 +38,9 @@ export default function LoginPage() {
 
             if (!response.status) throw new Error(data.message || 'Login failed');
 
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user_name', data.user?.name);
-            localStorage.setItem('role', data.user?.role);
-            localStorage.setItem('id', data.user?.id);
-            router.push('/');
+            await login(data?.token, data?.user);
+            window.location.href = '/';
+
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message);
@@ -51,7 +49,6 @@ export default function LoginPage() {
             }
         } finally {
             setLoading(false);
-            router.refresh();
         }
     };
 

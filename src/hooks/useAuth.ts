@@ -42,8 +42,11 @@ export function useAuth() {
     setLoading(false);
   }, []);
 
-  const login = (token: string, userData: User) => {
+  const login = async(token: any, userData: any) => {
     localStorage.setItem('token', token);
+    localStorage.setItem('user_name', userData?.name);
+    localStorage.setItem('role', userData?.role);
+    localStorage.setItem('id', userData?.id);
     setUser(userData);
   };
 

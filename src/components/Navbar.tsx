@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   AppBar,
   Toolbar,
@@ -15,11 +14,13 @@ import {
   Link,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useAuth } from '@/hooks/useAuth';
+import { confirm } from 'material-ui-confirm';
 
 export default function Navbar() {
   const [user, setUser] = useState<{ name: string; role: string } | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const router = useRouter();
+  const { logout, loading } = useAuth();
 
   useEffect(() => {
     const userRole = localStorage.getItem('role');
@@ -34,15 +35,18 @@ export default function Navbar() {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user_name');
-    localStorage.removeItem('role');
-    localStorage.removeItem('id');
-    setUser(null);
-    setAnchorEl(null);
-    router.push('/');
-    router.refresh();
+  const handleLogout = async () => {
+    const { confirmed } = await confirm({
+      title: "Do you want to logout ?",
+      description: "This action cannot be undone.",
+      confirmationText: "Yes, Logout",
+      cancellationText: "Cancel",
+    });
+
+    if (confirmed) {
+
+      logout();
+    }
   };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -55,7 +59,7 @@ export default function Navbar() {
 
   return (
     <AppBar position="static" color="default" elevation={1} sx={{ mb: 4, backgroundColor: '#fff' }}>
-      <Container maxWidth="xl">
+      {!loading && <Container maxWidth="xl">
         <Toolbar className="ml-[130px]" disableGutters>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, ml: 4 }}>
             <Link href="/" color="inherit" underline="hover" sx={{ mx: 1.5 }}>
@@ -99,9 +103,9 @@ export default function Navbar() {
             </IconButton>
           </Box>
         </Toolbar>
-      </Container>
+      </Container>}
 
-      <Menu
+      {!loading && <Menu
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: 'top',
@@ -153,7 +157,7 @@ export default function Navbar() {
             </Link>
           </MenuItem>
         ]}
-      </Menu>
+      </Menu>}
     </AppBar>
   );
 }

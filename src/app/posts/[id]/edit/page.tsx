@@ -15,6 +15,8 @@ import {
     Typography
 } from '@mui/material';
 import { apiClient } from '@/lib/apiClient';
+import { showToast } from 'react-next-toast';
+import { confirm } from 'material-ui-confirm';
 
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
     const { id }: any = use(params);
@@ -44,19 +46,31 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         e.preventDefault();
         if (!post) return;
 
+
         try {
-            const response = await apiClient(`/blog/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: { title: post.title, content: post.content },
-                auth: true
+            const { confirmed } = await confirm({
+                title: "Confirm Action ?",
+                description: "This action cannot be undone.",
+                confirmationText: "Yes, Confirm",
+                cancellationText: "Cancel",
             });
 
-            if (!response) throw new Error('Failed to update post');
+            if (confirmed) {
+                const response = await apiClient(`/blog/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: { title: post.title, content: post.content },
+                    auth: true
+                });
 
-            router.push('/posts/list');
-            router.refresh();
+                if (!response) throw new Error('Failed to update post');
+
+                router.push('/posts/list');
+                router.refresh();
+                showToast.success("Post updated successfully!", 3000)
+            }
         } catch (err: unknown) {
+            showToast.error("Something went wrong!", 3000)
             if (err instanceof Error) {
                 setError(err.message);
             } else {
@@ -70,69 +84,69 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
     return (
         <ProtectedRoute>
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <Typography variant="h4" component="h1" gutterBottom>
-                Edit Post
-            </Typography>
-            {error && (
-                <Typography color="error" sx={{ mb: 2 }}>
-                    {error}
+            <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+                <Typography variant="h4" component="h1" gutterBottom>
+                    Edit Post
                 </Typography>
-            )}
+                {error && (
+                    <Typography color="error" sx={{ mb: 2 }}>
+                        {error}
+                    </Typography>
+                )}
 
-            <form onSubmit={handleSubmit}>
-                <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
-                    <Table>
-                        <TableBody>
-                            <TableRow>
-                                <TableCell sx={{ fontWeight: 'bold', width: '25%', bgcolor: '#f9f9f9' }}>
-                                    Title
-                                </TableCell>
-                                <TableCell>
-                                    <TextField
-                                        fullWidth
-                                        value={post.title}
-                                        onChange={(e) => setPost({ ...post, title: e.target.value })}
-                                        required
-                                        variant="outlined"
-                                    />
-                                </TableCell>
-                            </TableRow>
+                <form onSubmit={handleSubmit}>
+                    <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
+                        <Table>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell sx={{ fontWeight: 'bold', width: '25%', bgcolor: '#f9f9f9' }}>
+                                        Title
+                                    </TableCell>
+                                    <TableCell>
+                                        <TextField
+                                            fullWidth
+                                            value={post.title}
+                                            onChange={(e) => setPost({ ...post, title: e.target.value })}
+                                            required
+                                            variant="outlined"
+                                        />
+                                    </TableCell>
+                                </TableRow>
 
-                            <TableRow>
-                                <TableCell sx={{ fontWeight: 'bold', bgcolor: '#f9f9f9', verticalAlign: 'top' }}>
-                                    Content
-                                </TableCell>
-                                <TableCell>
-                                    <TextField
-                                        fullWidth
-                                        multiline
-                                        rows={8}
-                                        value={post.content}
-                                        onChange={(e) => setPost({ ...post, content: e.target.value })}
-                                        required
-                                        variant="outlined"
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                                <TableRow>
+                                    <TableCell sx={{ fontWeight: 'bold', bgcolor: '#f9f9f9', verticalAlign: 'top' }}>
+                                        Content
+                                    </TableCell>
+                                    <TableCell>
+                                        <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={8}
+                                            value={post.content}
+                                            onChange={(e) => setPost({ ...post, content: e.target.value })}
+                                            required
+                                            variant="outlined"
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
 
-                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
-                    <Button type="submit" variant="contained" color="primary">
-                        Save Changes
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={() => router.push('/posts/list')}
-                    >
-                        Cancel
-                    </Button>
-                </div>
-            </form>
-        </div>
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                        <Button type="submit" variant="contained" color="primary">
+                            Save Changes
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={() => router.push('/posts/list')}
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </form>
+            </div>
         </ProtectedRoute>
     );
 }

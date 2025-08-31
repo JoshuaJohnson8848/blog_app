@@ -2,8 +2,11 @@
 
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiClient } from '@/lib/apiClient';
+import { confirm } from 'material-ui-confirm';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { showToast } from 'react-next-toast';
 
 export default function CreatePostPage() {
   const [title, setTitle] = useState('');
@@ -18,20 +21,30 @@ export default function CreatePostPage() {
     setLoading(true);
 
     try {
-      const response = await apiClient('/blog', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: { title, content },
-        auth: true
+
+      const { confirmed } = await confirm({
+        title: "Confirm Action ?",
+        description: "This action cannot be undone.",
+        confirmationText: "Yes, Confirm",
+        cancellationText: "Cancel",
       });
 
-      const data = await response;
+      if (confirmed) {
+        const response = await apiClient('/blog', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: { title, content },
+          auth: true
+        });
 
-      if (!response) throw new Error(data.message || 'Failed to create post');
-
-      router.push('/posts/list');
-      router.refresh();
+        const data = await response;
+        if (!response) throw new Error(data.message || 'Failed to create post');
+        router.push('/posts/list');
+        router.refresh();
+        showToast.success("Post created successfully!", 3000)
+      }
     } catch (err: unknown) {
+      showToast.error("Something went wrong!", 3000)
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -78,12 +91,12 @@ export default function CreatePostPage() {
               >
                 {loading ? 'Publishing...' : 'Publish'}
               </button>
-              <a
-                href="/dashboard"
+              <Link
+                href="/"
                 className="px-6 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
               >
                 Cancel
-              </a>
+              </Link>
             </div>
           </div>
         </form>

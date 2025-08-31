@@ -3,36 +3,50 @@
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { apiClient } from '@/lib/apiClient';
 import { User } from '@/lib/types/user';
+import { confirm } from 'material-ui-confirm';
 import { useEffect, useState } from 'react';
+import { showToast } from 'react-next-toast';
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchUsers = async () => {
+    try {
+      const data = await apiClient('/user?type=user', { auth: true });
+      setUsers(Array.isArray(data?.data) ? data?.data : []);
+    } catch (error) {
+      alert('Failed to load users');
+      console.log(error);
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const data = await apiClient('/user?type=user', { auth: true });
-        setUsers(Array.isArray(data?.data) ? data?.data : []);
-      } catch (error) {
-        alert('Failed to load users');
-        console.log(error);
-        
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchUsers();
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this user?')) return;
     try {
-      await apiClient(`/api/users/${id}`, { method: 'DELETE', auth: true });
-      setUsers(users.filter((u) => u._id !== id));
+      const { confirmed } = await confirm({
+        title: "Confirm Action ?",
+        description: "This action cannot be undone.",
+        confirmationText: "Yes, Confirm",
+        cancellationText: "Cancel",
+      });
+
+      if (confirmed) {
+        await apiClient(`/user/${id}`, { method: 'DELETE', auth: true });
+        setUsers(users.filter((u) => u._id !== id));
+        showToast.success("User deleted successfully!", 3000)
+      }
     } catch (error) {
       console.log(error);
-      alert('Failed to delete user');
+      showToast.error("Something went wrong!", 3000)
+    } finally {
+      fetchUsers();
     }
   };
 
