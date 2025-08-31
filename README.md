@@ -75,6 +75,6 @@ npm run dev
 ---
 
 ## 👤 Author
-- **Your Name**  
-- GitHub: [@yourusername](https://github.com/JoshuaJohnson8848)  
+- **Joshua Johnson**  
+- GitHub: [https://github.com/JoshuaJohnson8848](https://github.com/JoshuaJohnson8848)  
 - Email: joshuatjohnson255@gmail.com
