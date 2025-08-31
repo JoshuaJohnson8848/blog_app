@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Blog Application Frontend (Next.js)
 
-## Getting Started
+This is the **frontend** for the Blog Application built with **Next.js** and styled using **Tailwind CSS**.  
+The frontend connects to the backend API (Node.js/Express) to provide full blog CRUD, authentication, and user management.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Features
+- User Registration & Login (JWT authentication)
+- Role-based access (Admin/User)
+- Public blog listing page
+- Blog detail page
+- Create, update, and delete posts (based on role)
+- User profile management
+- Tailwind CSS
+
+---
+
+## 🔗 Live Demo
+Frontend: [https://blog-85mulgnvb-joshuajohnson8848s-projects.vercel.app/](https://blog-85mulgnvb-joshuajohnson8848s-projects.vercel.app/)  
+Backend API: [https://joshuadev.in/api](https://joshuadev.in/api)  
+
+---
+
+## 📂 Project Structure
+```
+frontend/
+├── app/ or pages/      # Next.js routes
+├── components/         # Reusable UI components
+├── styles/             # Tailwind styles
+├── utils/              # Helpers (auth, API calls)
+└── ...
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ Setup Instructions
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Clone the repository
+```bash
+git clone https://github.com/JoshuaJohnson8848/blog_app.git
+cd blog-app
+```
 
-## Learn More
+### 2. Install dependencies
+```bash
+npm install
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Setup environment variables
+Create `.env.local`:
+```
+NEXT_PUBLIC_API_URL=https://joshuadev.in/api (https://localhost:7700/api)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Run locally
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## ✅ Deliverables Checklist
+- [x] Authentication (register/login/logout with JWT)  
+- [x] Role-based access (Admin/User)  
+- [x] Blog CRUD (frontend integration)  
+- [x] Public blog listing + detail page  
+- [x] Profile management  
+- [x] Deployment on Vercel  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👤 Author
+- **Your Name**  
+- GitHub: [@yourusername](https://github.com/JoshuaJohnson8848)  
+- Email: joshuatjohnson255@gmail.com
