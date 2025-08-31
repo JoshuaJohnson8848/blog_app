@@ -11,6 +11,8 @@ The frontend connects to the backend API (Node.js/Express) to provide full blog 
 - Public blog listing page
 - Blog detail page
 - Create, update, and delete posts (based on role)
+- comment section under blogs
+- search for blogs
 - User profile management
 - Tailwind CSS
 
@@ -65,7 +67,9 @@ npm run dev
 - [x] Role-based access (Admin/User)  
 - [x] Blog CRUD (frontend integration)  
 - [x] Public blog listing + detail page  
+- [x] Search for blogs  
 - [x] Profile management  
+- [x] Comment Section under blogs
 - [x] Deployment on Vercel  
 
 ---
